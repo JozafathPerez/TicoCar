@@ -1,0 +1,20 @@
+USE TicoCarBD;
+GO;
+
+CREATE TABLE [Users] (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    IdentificationType NVARCHAR(50) NOT NULL, -- Tipo de identificación
+    IdentificationNumber NVARCHAR(20) UNIQUE NOT NULL, -- Número de identificación (cédula)
+    FirstName NVARCHAR(50) NOT NULL, -- Nombre
+    LastName1 NVARCHAR(50) NOT NULL, -- Primer apellido
+    LastName2 NVARCHAR(50) NULL, -- Segundo apellido
+    Nationality NVARCHAR(50) NOT NULL, -- Nacionalidad
+    BirthDate DATE NOT NULL, -- Fecha de nacimiento
+    Email NVARCHAR(100) UNIQUE NOT NULL, -- Correo electrónico
+    PhoneNumber NVARCHAR(20) NOT NULL, -- Teléfono
+    Province NVARCHAR(50) NOT NULL, -- Provincia
+    Canton NVARCHAR(50) NOT NULL, -- Cantón
+    District NVARCHAR(50) NOT NULL, -- Distrito
+    Password NVARCHAR(50) NOT NULL, -- Hash de la contraseña segura
+    InterfaceLanguage NVARCHAR(20) CHECK (InterfaceLanguage IN ('es-CR', 'en-US')) DEFAULT 'es-CR' -- Idioma de la interfaz
+);
