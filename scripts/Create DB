@@ -1,88 +1,123 @@
+-- Crear la base de datos
 --CREATE DATABASE TicoCarBD;
 -- GO
 
+-- Usar la base de datos
 USE TicoCarBD;
 GO
 
-CREATE TABLE [Usuarios] (
-    idUsuario INT PRIMARY KEY IDENTITY(1,1),
-    tipoIdentificacion NVARCHAR(50) NOT NULL, -- Tipo de identificación
-    cedula NVARCHAR(20) UNIQUE NOT NULL, -- Número de identificación (cédula)
-    nombre NVARCHAR(50) NOT NULL, -- Nombre
-    primerApellido NVARCHAR(50) NOT NULL, -- Primer apellido
-    segundoApellido NVARCHAR(50) NULL, -- Segundo apellido
-    nacionalidad NVARCHAR(50) NOT NULL, -- Nacionalidad
+-- Tabla de Usuarios
+CREATE TABLE Usuarios (
+    usuarioId INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único del usuario
+    tipoIdentificacion NVARCHAR(20) NOT NULL, -- Tipo de identificación: 'cédula', 'pasaporte', etc.
+    numeroIdentificacion NVARCHAR(50) NOT NULL UNIQUE, -- Número de cédula o pasaporte
+    nombre NVARCHAR(50) NOT NULL, -- Primer nombre del usuario
+    apellido1 NVARCHAR(50) NOT NULL, -- Primer apellido
+    apellido2 NVARCHAR(50) NOT NULL, -- Segundo apellido
+    nacionalidad NVARCHAR(50), -- Nacionalidad del usuario
     fechaNacimiento DATE NOT NULL, -- Fecha de nacimiento
-    correoElectronico NVARCHAR(100) UNIQUE NOT NULL, -- Correo electrónico
-    telefono NVARCHAR(20) NOT NULL, -- Teléfono
-    provincia NVARCHAR(50) NOT NULL, -- Provincia
-    canton NVARCHAR(50) NOT NULL, -- Cantón
-    distrito NVARCHAR(50) NOT NULL, -- Distrito
-    contrasena NVARCHAR(50) NOT NULL, -- Hash de la contraseña segura
-    idiomaInterfaz NVARCHAR(20) CHECK (idiomaInterfaz IN ('es-CR', 'en-US')) DEFAULT 'es-CR' -- Idioma de la interfaz
+    correo NVARCHAR(100) NOT NULL UNIQUE, -- Correo electrónico, usado para el inicio de sesión
+    contrasena NVARCHAR(255) NOT NULL, -- Contraseña segura para autenticación
+    telefono NVARCHAR(20) NOT NULL, -- Número de teléfono del usuario
+    provincia NVARCHAR(50), -- Provincia donde reside el usuario
+    canton NVARCHAR(50), -- Cantón donde reside el usuario
+    distrito NVARCHAR(50), -- Distrito donde reside el usuario
+    idiomaInterfaz NVARCHAR(20) CHECK (idiomaInterfaz IN ('es-CR', 'en-US')) DEFAULT 'es-CR', -- Idioma preferido de la interfaz (español o inglés)
+    estaVerificado BIT DEFAULT 0, -- 1 para verificado, 0 para no verificado (validación con Registro Civil)
+    fechaRegistro DATETIME DEFAULT GETDATE(), -- Fecha de registro del usuario
+    rol NVARCHAR(20) CHECK (rol IN ('comprador', 'vendedor', 'admin')) DEFAULT 'comprador' -- Rol del usuario dentro del sistema
 );
-GO
 
-CREATE TABLE [Vehiculo] (
-    idVehiculo INT PRIMARY KEY IDENTITY(1,1),
-    tipoVehiculo VARCHAR(50), -- Tipo de vehículo (sedán, camioneta, SUV, etc.)
-    marca VARCHAR(100), -- Marca del vehículo
-    modelo VARCHAR(100), -- Modelo del vehículo
-    ano INT, -- Año de fabricación del vehículo
-    placa VARCHAR(20) UNIQUE, -- Placa única para validación
-    precioColones DECIMAL(18,2), -- Precio en colones
-    precioNegociable BIT, -- 1 para sí, 0 para no (indica si el precio es negociable)
-    aceptaOtrosVehiculos BIT, -- 1 para sí, 0 para no (indica si acepta otros vehículos como parte de pago)
-    fotosInternas VARCHAR(500), -- Ruta o identificadores de las fotos internas del vehículo
-    fotosExternas VARCHAR(500), -- Ruta o identificadores de las fotos externas del vehículo
-    transmision VARCHAR(20), -- Tipo de transmisión (sencilla o 4x4)
-    cantidadPuertas INT, -- Cantidad de puertas del vehículo
-    largo DECIMAL(5,2), -- Largo del vehículo en metros
+-- Tabla de Vehículos
+CREATE TABLE Vehiculos (
+    vehiculoId INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único del vehículo
+    usuarioId INT NOT NULL, -- Relación con el usuario que registra el vehículo
+    marca NVARCHAR(50) NOT NULL, -- Marca del vehículo (ejemplo: Toyota)
+    modelo NVARCHAR(50) NOT NULL, -- Modelo del vehículo (ejemplo: Corolla)
+    anio INT NOT NULL, -- Año de fabricación del vehículo
+    placa NVARCHAR(20) NOT NULL UNIQUE, -- Placa del vehículo, validada con COSEVI
+    precioColones DECIMAL(10,2) NOT NULL, -- Precio del vehículo en colones
+    esNegociable BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el precio es negociable)
+    recibeOtrosVehiculos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si acepta intercambios)
+    transmision NVARCHAR(20) CHECK (transmision IN ('manual', 'automatica', 'dual')) NOT NULL, -- Tipo de transmisión del vehículo
+    tipoVehiculo NVARCHAR(20) CHECK (tipoVehiculo IN ('sedan', 'camioneta', 'lujo', 'suv', 'minivan')) NOT NULL, -- Tipo de vehículo
+    puertas INT CHECK (puertas >= 2 AND puertas <= 5), -- Cantidad de puertas del vehículo
+    largo DECIMAL(5,2), -- Longitud del vehículo en metros
     ancho DECIMAL(5,2), -- Ancho del vehículo en metros
-    alto DECIMAL(5,2), -- Alto del vehículo en metros
-    materialAsientos VARCHAR(20), -- Material de los asientos (tela, cuero, etc.)
-    motor VARCHAR(20), -- Tipo de motor (gasolina, diésel, eléctrico, híbrido)
-    vidriosElectricos BIT, -- 1 para sí, 0 para no (indica si tiene vidrios eléctricos)
-    espejosElectricos BIT, -- 1 para sí, 0 para no (indica si tiene espejos eléctricos)
-    sensoresProximidadTraseros BIT, -- 1 para sí, 0 para no (indica si tiene sensores de proximidad traseros)
-    sensoresProximidadDelanteros BIT, -- 1 para sí, 0 para no (indica si tiene sensores de proximidad delanteros)
-    camaraRetroceso BIT, -- 1 para sí, 0 para no (indica si tiene cámara de retroceso)
-    camara360 BIT, -- 1 para sí, 0 para no (indica si tiene cámara 360)
-    sensoresProximidadLateral BIT, -- 1 para sí, 0 para no (indica si tiene sensores de proximidad laterales)
-    tableroMando VARCHAR(50), -- Tipo de tablero (táctil, análogo, ambos)
-    transmisionTipo VARCHAR(20), -- Tipo de transmisión (manual, automática, dual)
-    tapizado VARCHAR(20), -- Tipo de tapizado (cuero, plástico, tela)
-    sistemaSonido VARCHAR(20), -- Tipo de sistema de sonido (estéreo 7.1, estándar)
-    estadoVehiculo INT, -- Estado del vehículo (1 a 5, siendo 1 excelente y 5 muy dañado)
-    asociadoAleasing BIT, -- 1 para sí, 0 para no (indica si el vehículo está asociado a leasing)
-    fechaRegistro DATETIME DEFAULT GETDATE(), -- Fecha en que se registró el vehículo
-    fechaModificacion DATETIME, -- Fecha de la última modificación
-
-
-    idUsuario INT, -- ID del usuario que registró o modificó el vehículo
-    modeloPlantilla BIT -- 1 para plantilla, 0 para vehículo individual
-    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) -- Clave foránea que conecta Vehiculo con Usuarios
+    alto DECIMAL(5,2), -- Altura del vehículo en metros
+    materialAsientos NVARCHAR(20) CHECK (materialAsientos IN ('tela', 'cuero')), -- Material de los asientos
+    tipoMotor NVARCHAR(20) CHECK (tipoMotor IN ('gasolina', 'diesel', 'gasLicuado', 'electrico', 'hibrido')), -- Tipo de motor del vehículo
+    vidriosElectricos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene vidrios eléctricos)
+    espejosElectricos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene espejos eléctricos)
+    sensoresTraseros BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene sensores de proximidad traseros)
+    sensoresDelanteros BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene sensores delanteros)
+    camaraRetroceso BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene cámara de retroceso)
+    camara360 BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene cámara 360)
+    sensoresLaterales BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene sensores laterales)
+    tableroMando NVARCHAR(20) CHECK (tableroMando IN ('tactil', 'analogico', 'mixto')), -- Tipo de tablero de mando
+    tapizado NVARCHAR(20) CHECK (tapizado IN ('cuero', 'plastico', 'tela')), -- Material del tapizado interior
+    sistemaSonido NVARCHAR(20) CHECK (sistemaSonido IN ('estereo7.1', 'estandar')), -- Tipo de sistema de sonido
+    condicion INT CHECK (condicion BETWEEN 1 AND 5) NOT NULL, -- Condición del vehículo (1 es excelente, 5 muy dañado)
+    estaEnLeasing BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el vehículo está asociado a un leasing)
+    estaPublicado BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el vehículo está publicado)
+    fechaCreacion DATETIME DEFAULT GETDATE(), -- Fecha de registro del vehículo
+    fechaActualizacion DATETIME DEFAULT GETDATE(), -- Fecha de última actualización del vehículo
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId) -- Relación con la tabla Usuarios
 );
-GO
 
-CREATE TABLE [Reserva] (
-    idReserva INT PRIMARY KEY IDENTITY(1,1),
-    idUsuario INT, -- Relacionado con la tabla Usuarios
-    idVehiculo INT, -- Relacionado con la tabla Vehiculo
-    fechaReserva DATETIME DEFAULT GETDATE(), -- Fecha de la reserva
-    estadoReserva VARCHAR(50) CHECK (estadoReserva IN ('pendiente', 'confirmada', 'cancelada')) DEFAULT 'pendiente', -- Estado de la reserva
-    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario), -- Relación con la tabla Usuarios
-    FOREIGN KEY (idVehiculo) REFERENCES Vehiculo(idVehiculo) -- Relación con la tabla Vehiculo
+-- Tabla de Fotos de Vehículos
+CREATE TABLE FotosVehiculos (
+    fotoId INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único de la foto
+    vehiculoId INT NOT NULL, -- Relación con el vehículo al que pertenece la foto
+    urlFoto NVARCHAR(255) NOT NULL, -- Ruta o URL de la foto
+    tipoFoto NVARCHAR(20) CHECK (tipoFoto IN ('interior', 'exterior')), -- Tipo de foto: interior o exterior
+    FOREIGN KEY (vehiculoId) REFERENCES Vehiculos(vehiculoId) -- Relación con la tabla Vehiculos
 );
-GO
 
-CREATE TABLE [Pagos] (
-    idPago INT PRIMARY KEY IDENTITY(1,1),
-    idReserva INT, -- Relacionado con la tabla Reserva
-    monto DECIMAL(18,2), -- Monto pagado
-    metodoPago VARCHAR(50) CHECK (metodoPago IN ('sinpe', 'paypal', 'tarjeta_credito')), -- Método de pago
-    fechaPago DATETIME DEFAULT GETDATE(), -- Fecha del pago
-    estadoPago VARCHAR(50) CHECK (estadoPago IN ('pendiente', 'completado', 'fallido')) DEFAULT 'pendiente', -- Estado del pago
-    FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva) -- Relación con la tabla Reserva
+-- Tabla de Reservas de Vehículos
+CREATE TABLE ReservasVehiculos (
+    reservaId INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único de la reserva
+    usuarioId INT NOT NULL, -- Usuario que realiza la reserva
+    vehiculoId INT NOT NULL, -- Vehículo reservado
+    precioDolares DECIMAL(10,2), -- Precio del vehículo convertido a dólares
+    fechaReserva DATETIME DEFAULT GETDATE(), -- Fecha en que se realiza la reserva
+    estado NVARCHAR(20) CHECK (estado IN ('pendiente', 'confirmada', 'cancelada')) DEFAULT 'pendiente', -- Estado de la reserva
+    metodoPago NVARCHAR(20) CHECK (metodoPago IN ('sinpe', 'paypal', 'tarjetaCredito')) NOT NULL, -- Método de pago utilizado
+    montoPago DECIMAL(10,2) DEFAULT 2000.00, -- Monto fijo de pago por cita
+    lugarCita NVARCHAR(50) CHECK (lugarCita IN ('Cartago', 'San José', 'Heredia', 'Alajuela')) NOT NULL, -- Lugar de la cita de revisión
+    fechaCita DATETIME NOT NULL, -- Fecha y hora de la cita de revisión
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId), -- Relación con la tabla Usuarios
+    FOREIGN KEY (vehiculoId) REFERENCES Vehiculos(vehiculoId) -- Relación con la tabla Vehiculos
 );
-GO
+
+-- Tabla de Historial de Consultas
+CREATE TABLE HistorialConsultas (
+    consultaId INT IDENTITY(1,1) PRIMARY KEY,
+    usuarioId INT,
+    terminoConsulta NVARCHAR(255) NOT NULL, -- Ejemplo: "Toyota SUV 2020"
+    fechaConsulta DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId)
+);
+
+-- Tabla de Comparaciones de Vehículos
+CREATE TABLE ComparacionesVehiculos (
+    comparacionId INT IDENTITY(1,1) PRIMARY KEY,
+    usuarioId INT NOT NULL,
+    vehiculoId1 INT NOT NULL,
+    vehiculoId2 INT NOT NULL,
+    vehiculoId3 INT,
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId),
+    FOREIGN KEY (vehiculoId1) REFERENCES Vehiculos(vehiculoId),
+    FOREIGN KEY (vehiculoId2) REFERENCES Vehiculos(vehiculoId),
+    FOREIGN KEY (vehiculoId3) REFERENCES Vehiculos(vehiculoId)
+);
+
+-- Tabla de Logs de Actividades
+CREATE TABLE LogsActividades (
+    logId INT IDENTITY(1,1) PRIMARY KEY,
+    usuarioId INT NOT NULL,
+    tipoActividad NVARCHAR(50) NOT NULL, -- Ejemplo: "registroVehiculo", "reservaCita"
+    descripcionActividad NVARCHAR(MAX),
+    fechaActividad DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId)
+);
