@@ -46,5 +46,6 @@ class BackendConnection {
   }
   
   // Exporta la instancia única de la conexión al backend
-  export default new BackendConnection("http://localhost:3000");
+  export default new BackendConnection("http://192.168.100.9:3000");
+
   
