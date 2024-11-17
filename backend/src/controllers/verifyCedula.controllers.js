@@ -38,7 +38,13 @@ async function verifyCedula(pId) {
     console.error('Error durante la verificación:', error);
   }
 
-  return `${cedula},${nombreCompleto},${fechaNacimiento},${nacionalidad}`;
+  // Devolver la respuesta como un objeto JSON
+  return {
+    cedula: cedula,
+    nombreCompleto: nombreCompleto,
+    fechaNacimiento: fechaNacimiento,
+    nacionalidad: nacionalidad
+  };
 }
 
 export default verifyCedula;

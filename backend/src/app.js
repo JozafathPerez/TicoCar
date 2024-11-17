@@ -26,4 +26,10 @@ app.get('/verifyPlate/:plate', async (req, res) => {
     res.send(result);
 });
 
+// Middleware para manejar errores
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 export default app;

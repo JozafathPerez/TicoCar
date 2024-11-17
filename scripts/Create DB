@@ -25,8 +25,8 @@ CREATE TABLE Usuarios (
     idiomaInterfaz NVARCHAR(20) CHECK (idiomaInterfaz IN ('es-CR', 'en-US')) DEFAULT 'es-CR', -- Idioma preferido de la interfaz (español o inglés)
     estaVerificado BIT DEFAULT 0, -- 1 para verificado, 0 para no verificado (validación con Registro Civil)
     fechaRegistro DATETIME DEFAULT GETDATE(), -- Fecha de registro del usuario
-    rol NVARCHAR(20) CHECK (rol IN ('comprador', 'vendedor', 'admin')) DEFAULT 'comprador' -- Rol del usuario dentro del sistema
 );
+GO
 
 -- Tabla de Vehículos
 CREATE TABLE Vehiculos (
@@ -64,6 +64,7 @@ CREATE TABLE Vehiculos (
     fechaActualizacion DATETIME DEFAULT GETDATE(), -- Fecha de última actualización del vehículo
     FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId) -- Relación con la tabla Usuarios
 );
+GO
 
 -- Tabla de Fotos de Vehículos
 CREATE TABLE FotosVehiculos (
@@ -73,6 +74,7 @@ CREATE TABLE FotosVehiculos (
     tipoFoto NVARCHAR(20) CHECK (tipoFoto IN ('interior', 'exterior')), -- Tipo de foto: interior o exterior
     FOREIGN KEY (vehiculoId) REFERENCES Vehiculos(vehiculoId) -- Relación con la tabla Vehiculos
 );
+GO
 
 -- Tabla de Reservas de Vehículos
 CREATE TABLE ReservasVehiculos (
@@ -89,6 +91,7 @@ CREATE TABLE ReservasVehiculos (
     FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId), -- Relación con la tabla Usuarios
     FOREIGN KEY (vehiculoId) REFERENCES Vehiculos(vehiculoId) -- Relación con la tabla Vehiculos
 );
+GO
 
 -- Tabla de Historial de Consultas
 CREATE TABLE HistorialConsultas (
@@ -98,6 +101,7 @@ CREATE TABLE HistorialConsultas (
     fechaConsulta DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId)
 );
+GO
 
 -- Tabla de Comparaciones de Vehículos
 CREATE TABLE ComparacionesVehiculos (
@@ -111,6 +115,7 @@ CREATE TABLE ComparacionesVehiculos (
     FOREIGN KEY (vehiculoId2) REFERENCES Vehiculos(vehiculoId),
     FOREIGN KEY (vehiculoId3) REFERENCES Vehiculos(vehiculoId)
 );
+GO
 
 -- Tabla de Logs de Actividades
 CREATE TABLE LogsActividades (
@@ -121,3 +126,67 @@ CREATE TABLE LogsActividades (
     fechaActividad DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId)
 );
+GO
+
+CREATE OR ALTER PROCEDURE InsertarUsuario
+    @tipoIdentificacion NVARCHAR(20),
+    @numeroIdentificacion NVARCHAR(50),
+    @nombre NVARCHAR(50),
+    @apellido1 NVARCHAR(50),
+    @apellido2 NVARCHAR(50),
+    @nacionalidad NVARCHAR(50),
+    @fechaNacimiento DATE,
+    @correo NVARCHAR(100),
+    @contrasena NVARCHAR(255),
+    @telefono NVARCHAR(20),
+    @provincia NVARCHAR(50),
+    @canton NVARCHAR(50),
+    @distrito NVARCHAR(50),
+    @idiomaInterfaz NVARCHAR(20) = 'es-CR'
+AS
+BEGIN
+    INSERT INTO Usuarios (
+        tipoIdentificacion,
+        numeroIdentificacion,
+        nombre,
+        apellido1,
+        apellido2,
+        nacionalidad,
+        fechaNacimiento,
+        correo,
+        contrasena,
+        telefono,
+        provincia,
+        canton,
+        distrito,
+        idiomaInterfaz
+    )
+    VALUES (
+        @tipoIdentificacion,
+        @numeroIdentificacion,
+        @nombre,
+        @apellido1,
+        @apellido2,
+        @nacionalidad,
+        @fechaNacimiento,
+        @correo,
+        @contrasena,
+        @telefono,
+        @provincia,
+        @canton,
+        @distrito,
+        @idiomaInterfaz
+    );
+END;
+GO
+
+CREATE OR ALTER PROCEDURE ValidarUsuario
+    @correo NVARCHAR(100),
+    @contrasena NVARCHAR(255)
+AS
+BEGIN
+    SELECT usuarioId, nombre, apellido1, apellido2, correo
+    FROM Usuarios
+    WHERE correo = @correo AND contrasena = @contrasena;
+END;
+GO
