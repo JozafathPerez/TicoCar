@@ -13,6 +13,7 @@ class BackendConnection {
   
     async get(endpoint) {
       try {
+        console.log(`${this.baseURL}${endpoint}`);
         const response = await fetch(`${this.baseURL}${endpoint}`);
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
