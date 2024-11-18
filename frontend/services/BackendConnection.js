@@ -1,51 +1,83 @@
 // BackendConnection.js
 class BackendConnection {
-    static instance;
-  
-    constructor(baseURL) {
-      if (BackendConnection.instance) {
-        return BackendConnection.instance; // Retorna la misma instancia si ya existe
-      }
-  
-      this.baseURL = baseURL; // La URL base del backend
-      BackendConnection.instance = this; // Asigna la instancia a una propiedad estática
+  static instance;
+
+  constructor(baseURL) {
+    if (BackendConnection.instance) {
+      return BackendConnection.instance; // Retorna la misma instancia si ya existe
     }
-  
-    async get(endpoint) {
-      try {
-        console.log(`${this.baseURL}${endpoint}`);
-        const response = await fetch(`${this.baseURL}${endpoint}`);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        return await response.json(); // Devuelve los datos en formato JSON
-      } catch (error) {
-        console.error(`Error en GET ${endpoint}:`, error);
-        throw error; // Propaga el error para manejarlo en el componente
+
+    this.baseURL = baseURL; // La URL base del backend
+    BackendConnection.instance = this; // Asigna la instancia a una propiedad estática
+  }
+
+  async get(endpoint) {
+    try {
+      console.log(`${this.baseURL}${endpoint}`);
+      const response = await fetch(`${this.baseURL}${endpoint}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-    }
-  
-    async post(endpoint, data) {
-      try {
-        const response = await fetch(`${this.baseURL}${endpoint}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        return await response.json(); // Devuelve los datos en formato JSON
-      } catch (error) {
-        console.error(`Error en POST ${endpoint}:`, error);
-        throw error; // Propaga el error para manejarlo en el componente
-      }
+      return await response.json(); // Devuelve los datos en formato JSON
+    } catch (error) {
+      console.error(`Error en GET ${endpoint}:`, error);
+      throw error; // Propaga el error para manejarlo en el componente
     }
   }
-  
-  // Exporta la instancia única de la conexión al backend
-  export default new BackendConnection(process.env.BACKEND_URL); 
 
-  
+  async post(endpoint, data) {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      return await response.json(); // Devuelve los datos en formato JSON
+    } catch (error) {
+      console.error(`Error en POST ${endpoint}:`, error);
+      throw error; // Propaga el error para manejarlo en el componente
+    }
+  }
+
+  async put(endpoint, data) {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      return await response.json(); // Devuelve los datos en formato JSON
+    } catch (error) {
+      console.error(`Error en PUT ${endpoint}:`, error);
+      throw error; // Propaga el error para manejarlo en el componente
+    }
+  }
+
+  async delete(endpoint) {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      return await response.json(); // Devuelve los datos en formato JSON
+    } catch (error) {
+      console.error(`Error en DELETE ${endpoint}:`, error);
+      throw error; // Propaga el error para manejarlo en el componente
+    }
+  }
+}
+
+// Exporta la instancia única de la conexión al backend
+export default new BackendConnection(process.env.BACKEND_URL);

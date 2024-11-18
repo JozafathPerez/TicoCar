@@ -337,3 +337,83 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE ObtenerVehiculosPorUsuario
+    @usuarioId INT
+AS
+BEGIN
+    SELECT 
+        v.vehiculoId,
+        v.usuarioId,
+        v.marca,
+        v.modelo,
+        v.anio,
+        v.placa,
+        v.precioColones,
+        v.esNegociable,
+        v.recibeOtrosVehiculos,
+        v.transmision,
+        v.tipoVehiculo,
+        v.puertas,
+        v.largo,
+        v.ancho,
+        v.alto,
+        v.materialAsientos,
+        v.tipoMotor,
+        v.vidriosElectricos,
+        v.espejosElectricos,
+        v.sensoresTraseros,
+        v.sensoresDelanteros,
+        v.camaraRetroceso,
+        v.camara360,
+        v.sensoresLaterales,
+        v.tableroMando,
+        v.tapizado,
+        v.sistemaSonido,
+        v.condicion,
+        v.estaEnLeasing,
+        v.estaPublicado,
+        v.fechaCreacion,
+        v.fechaActualizacion,
+        STRING_AGG(f.urlFoto, ',') WITHIN GROUP (ORDER BY f.tipoFoto) AS fotos,
+        STRING_AGG(f.tipoFoto, ',') WITHIN GROUP (ORDER BY f.tipoFoto) AS tiposFotos
+    FROM 
+        Vehiculos v
+    LEFT JOIN 
+        FotosVehiculos f ON v.vehiculoId = f.vehiculoId
+    WHERE 
+        v.usuarioId = @usuarioId
+    GROUP BY
+        v.vehiculoId,
+        v.usuarioId,
+        v.marca,
+        v.modelo,
+        v.anio,
+        v.placa,
+        v.precioColones,
+        v.esNegociable,
+        v.recibeOtrosVehiculos,
+        v.transmision,
+        v.tipoVehiculo,
+        v.puertas,
+        v.largo,
+        v.ancho,
+        v.alto,
+        v.materialAsientos,
+        v.tipoMotor,
+        v.vidriosElectricos,
+        v.espejosElectricos,
+        v.sensoresTraseros,
+        v.sensoresDelanteros,
+        v.camaraRetroceso,
+        v.camara360,
+        v.sensoresLaterales,
+        v.tableroMando,
+        v.tapizado,
+        v.sistemaSonido,
+        v.condicion,
+        v.estaEnLeasing,
+        v.estaPublicado,
+        v.fechaCreacion,
+        v.fechaActualizacion;
+END;
+GO

@@ -10,21 +10,42 @@ export default function UserInfoPage() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-white p-4">
+    <View className="flex-1 justify-center items-center bg-gray-100 p-4">
       {user ? (
         <>
-          <Text className="text-2xl font-bold mb-4">Información del Usuario</Text>
-          <Text className="text-lg mb-2">Id Usuario: {user.usuarioId}</Text>
-          <Text className="text-lg mb-2">Nombre: {user.nombre}</Text>
-          <Text className="text-lg mb-2">Primer Apellido: {user.apellido1}</Text>
-          <Text className="text-lg mb-2">Segundo Apellido: {user.apellido2}</Text>
-          <Text className="text-lg mb-2">Correo: {user.correo}</Text>
-          <TouchableOpacity
-            onPress={handleLogout}
-            className="bg-red-500 py-2 px-4 rounded-md mt-4"
-          >
-            <Text className="text-white text-center font-semibold">Cerrar Sesión</Text>
-          </TouchableOpacity>
+          <View className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+            <View className="flex-row items-center mb-4">
+              <Text className="text-2xl font-bold ml-2">Información del Usuario</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-lg font-semibold">Id Usuario:</Text>
+              <Text className="text-lg">{user.usuarioId}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-lg font-semibold">Nombre:</Text>
+              <Text className="text-lg">{user.nombre}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-lg font-semibold">Primer Apellido:</Text>
+              <Text className="text-lg">{user.apellido1}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-lg font-semibold">Segundo Apellido:</Text>
+              <Text className="text-lg">{user.apellido2}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-lg font-semibold">Correo:</Text>
+              <View className="flex-row items-center">
+                <Text className="text-lg ml-2">{user.correo}</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={handleLogout}
+              className="bg-red-500 py-2 px-4 rounded-md flex-row items-center justify-center mt-4"
+            >
+              <Text className="text-white text-center font-semibold ml-2">Cerrar Sesión</Text>
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <Text className="text-lg">No hay información del usuario disponible.</Text>

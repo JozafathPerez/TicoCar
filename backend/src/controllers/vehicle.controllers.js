@@ -123,6 +123,21 @@ export const eliminarVehiculo = async (req, res) => {
     }
 };
 
+export const obtenerVehiculosPorUsuario = async (req, res) => {
+    try {
+        const { usuarioId } = req.params;
+        const pool = await getConnection();
+        const result = await pool.request()
+            .input('usuarioId', sql.Int, usuarioId)
+            .execute('ObtenerVehiculosPorUsuario');
+
+        res.status(200).json(result.recordset);
+    } catch (err) {
+        console.error('Error al obtener vehículos por usuario:', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 export const obtenerVehiculos = async (req, res) => {
     try {
         const pool = await getConnection();

@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, useWindowDimensions, Switch, ScrollView } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, useWindowDimensions, Switch, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'react-native-image-picker'; 
 import BackendConnection from '../services/BackendConnection';
+import VehiclePrototype from '../models/VehiclePrototype';
+import { UserContext } from '../context/UserContext';
 
 export default function VehicleRegistrationWizard({ navigation }) {
+  const { user, setUser } = useContext(UserContext);
+
+  if (!user) {
+    navigation.navigate('UserOut');
+    return null;
+  }
+
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(new VehiclePrototype({
     tipo: 'sedan',
     marca: 'Toyota',
     modelo: 'Corolla',
@@ -30,7 +40,8 @@ export default function VehicleRegistrationWizard({ navigation }) {
     estado: '1', // Ejemplo: 1 para "nuevo"
     leasing: false,
     fotos: { internas: ["url1_interna,url2_interna"], externas: ["url1_externa,url2_externa"] },
-  });
+  }));
+
   const { width } = useWindowDimensions(); // Obtén el ancho actual de la pantalla
   const isMobileView = width < 768; // Consideramos móvil si el ancho es menor a 768px
 
@@ -39,7 +50,7 @@ export default function VehicleRegistrationWizard({ navigation }) {
   };
 
   const resetForm = () => {
-    setFormData({
+    setFormData(new VehiclePrototype({
       tipo: 'sedan',
       marca: '',
       modelo: '',
@@ -63,7 +74,7 @@ export default function VehicleRegistrationWizard({ navigation }) {
       estado: '1', // Ejemplo: 1 para "nuevo"
       leasing: false,
       fotos: { internas: [], externas: [] },
-    });
+    }));
     setCurrentStep(1);
   };
 
@@ -73,7 +84,7 @@ export default function VehicleRegistrationWizard({ navigation }) {
     } else {
         try {
             const data = {
-                usuarioId: 1, // Asume un usuarioId fijo para la prueba
+                usuarioId: user.usuarioId, // Asume un usuarioId fijo para la prueba
                 marca: formData.marca,
                 modelo: formData.modelo,
                 anio: parseInt(formData.anio),
@@ -106,18 +117,19 @@ export default function VehicleRegistrationWizard({ navigation }) {
             };
             console.log('Data to send:', data);
             const response = await BackendConnection.post('/vehiculos', data);
-            console.log('Response from backend:', response);
+            console.log('Response from backend:', response.success);
 
             if (response.success) {
-                Alert.alert('Registro completo', 'El formulario ha sido completado con éxito.', [
-                    { text: 'OK', onPress: () => resetForm() }
-                ]);
+                console.log('Registro completo');
+                alert('Registro completado exitosamente');
+                resetForm(); 
+                
             } else {
-                Alert.alert('Error', 'Hubo un problema al registrar el vehículo.');
+                alert('Error', 'Hubo un problema al registrar el vehículo.');
             }
         } catch (error) {
             console.error('Error al registrar el vehículo:', error);
-            Alert.alert('Error', 'Hubo un problema al registrar el vehículo.');
+            alert('Error', 'Hubo un problema al registrar el vehículo.');
         }
     }
   };
@@ -138,15 +150,15 @@ export default function VehicleRegistrationWizard({ navigation }) {
       },
       (response) => {
         if (response.didCancel) {
-          Alert.alert('Operación cancelada', 'No se seleccionó ninguna foto.');
+          alert('Operación cancelada', 'No se seleccionó ninguna foto.');
         } else if (response.errorCode) {
-          Alert.alert('Error', 'Hubo un problema al seleccionar la foto.');
+          alert('Error', 'Hubo un problema al seleccionar la foto.');
         } else {
           const uri = response.assets[0].uri;
           setFormData((prevState) => {
             const updatedPhotos = [...prevState.fotos[type], uri];
             if (updatedPhotos.length > 4) {
-              Alert.alert('Límite alcanzado', 'Solo puedes subir hasta 4 fotos por tipo.');
+              alert('Límite alcanzado', 'Solo puedes subir hasta 4 fotos por tipo.');
               return prevState;
             }
             return {

@@ -11,9 +11,11 @@ import HomePage from './pages/HomePage';
 import BuyPage from './pages/BuyPage';
 import SellPage from './pages/SellPage';
 import EditPage from './pages/EditPage';
+import ModifyPage from './pages/ModifyPage';
 import ComparePage from './pages/ComparePage';
 import LoginPage from './pages/LoginPage';
 import UserInfoPage from './pages/UserInfoPage'; 
+import UserOut from './pages/UserOut';
 
 
 import './global.css';
@@ -36,9 +38,11 @@ export default function App() {
             <Stack.Screen name="Comprar" component={BuyPage} />
             <Stack.Screen name="Vender" component={SellPage} />
             <Stack.Screen name="Editar" component={EditPage} />
+            <Stack.Screen name="Modificar" component={ModifyPage} />
             <Stack.Screen name="Comparar" component={ComparePage} />
             <Stack.Screen name="Registro" component={LoginPage} />
             <Stack.Screen name="UserInfo" component={UserInfoPage} />
+            <Stack.Screen name="UserOut" component={UserOut} />
             <Stack.Screen name="NavigationMobile" component={NavigationMobile} />
 
           </Stack.Navigator>
