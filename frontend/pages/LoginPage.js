@@ -8,11 +8,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 import BackendConnection from '../services/BackendConnection';
 import { UserContext } from '../context/UserContext';
 
 export default function LoginPage() {
   const { setUser } = useContext(UserContext);
+  const navigation = useNavigation();
   const [view, setView] = useState('login'); // Alterna entre login y registro
   const [loading, setLoading] = useState(false);
   const [isCedulaVerified, setIsCedulaVerified] = useState(false); // Estado para verificar cédula
@@ -90,9 +92,10 @@ export default function LoginPage() {
         if (response) {
           setUser(response); // Guardar la información del usuario en el contexto
           alert('Inicio de sesión exitoso.');
+          console.log('Usuario', response);
+          navigation.navigate('UserInfo'); // Redirigir a la página de información del usuario
         } else {
-          console.log('Correo o contraseña incorrectos:', response);
-          alert('Correo o contraseña incorrectos.');
+          alert('Esta picha no sirve.');
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);

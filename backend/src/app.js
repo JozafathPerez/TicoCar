@@ -3,6 +3,7 @@
 import express from 'express';
 import cors from 'cors';
 import usersRoutes from './routes/users.routes.js';
+import vehicleRoutes from './routes/vehicle.routes.js'; // Importar las rutas de vehículos
 import dotenv from 'dotenv';
 import verifyCedula from './controllers/verifyCedula.controllers.js';
 import verifyPlate from './controllers/verifyPlate.controllers.js';
@@ -19,6 +20,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use(usersRoutes);
+app.use(vehicleRoutes); // Usar las rutas de vehículos
 
 app.get('/verifyCedula/:id', async (req, res) => {
     const id = req.params.id;

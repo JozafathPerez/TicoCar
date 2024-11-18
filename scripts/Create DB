@@ -39,14 +39,14 @@ CREATE TABLE Vehiculos (
     precioColones DECIMAL(10,2) NOT NULL, -- Precio del vehículo en colones
     esNegociable BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el precio es negociable)
     recibeOtrosVehiculos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si acepta intercambios)
-    transmision NVARCHAR(20) CHECK (transmision IN ('manual', 'automatica', 'dual')) NOT NULL, -- Tipo de transmisión del vehículo
-    tipoVehiculo NVARCHAR(20) CHECK (tipoVehiculo IN ('sedan', 'camioneta', 'lujo', 'suv', 'minivan')) NOT NULL, -- Tipo de vehículo
-    puertas INT CHECK (puertas >= 2 AND puertas <= 5), -- Cantidad de puertas del vehículo
+    transmision NVARCHAR(20) NOT NULL, -- Tipo de transmisión del vehículo
+    tipoVehiculo NVARCHAR(20) NOT NULL, -- Tipo de vehículo
+    puertas INT, -- Cantidad de puertas del vehículo
     largo DECIMAL(5,2), -- Longitud del vehículo en metros
     ancho DECIMAL(5,2), -- Ancho del vehículo en metros
     alto DECIMAL(5,2), -- Altura del vehículo en metros
-    materialAsientos NVARCHAR(20) CHECK (materialAsientos IN ('tela', 'cuero')), -- Material de los asientos
-    tipoMotor NVARCHAR(20) CHECK (tipoMotor IN ('gasolina', 'diesel', 'gasLicuado', 'electrico', 'hibrido')), -- Tipo de motor del vehículo
+    materialAsientos NVARCHAR(20), -- Material de los asientos
+    tipoMotor NVARCHAR(20), -- Tipo de motor del vehículo
     vidriosElectricos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene vidrios eléctricos)
     espejosElectricos BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene espejos eléctricos)
     sensoresTraseros BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene sensores de proximidad traseros)
@@ -54,10 +54,10 @@ CREATE TABLE Vehiculos (
     camaraRetroceso BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene cámara de retroceso)
     camara360 BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene cámara 360)
     sensoresLaterales BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si tiene sensores laterales)
-    tableroMando NVARCHAR(20) CHECK (tableroMando IN ('tactil', 'analogico', 'mixto')), -- Tipo de tablero de mando
-    tapizado NVARCHAR(20) CHECK (tapizado IN ('cuero', 'plastico', 'tela')), -- Material del tapizado interior
-    sistemaSonido NVARCHAR(20) CHECK (sistemaSonido IN ('estereo7.1', 'estandar')), -- Tipo de sistema de sonido
-    condicion INT CHECK (condicion BETWEEN 1 AND 5) NOT NULL, -- Condición del vehículo (1 es excelente, 5 muy dañado)
+    tableroMando NVARCHAR(20), -- Tipo de tablero de mando
+    tapizado NVARCHAR(20), -- Material del tapizado interior
+    sistemaSonido NVARCHAR(20), -- Tipo de sistema de sonido
+    condicion INT NOT NULL, -- Condición del vehículo (1 es excelente, 5 muy dañado)
     estaEnLeasing BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el vehículo está asociado a un leasing)
     estaPublicado BIT DEFAULT 0, -- 1 para sí, 0 para no (indica si el vehículo está publicado)
     fechaCreacion DATETIME DEFAULT GETDATE(), -- Fecha de registro del vehículo
@@ -66,7 +66,7 @@ CREATE TABLE Vehiculos (
 );
 GO
 
--- Tabla de Fotos de Vehículos
+-- Recrear la tabla FotosVehiculos sin restricciones CHECK
 CREATE TABLE FotosVehiculos (
     fotoId INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único de la foto
     vehiculoId INT NOT NULL, -- Relación con el vehículo al que pertenece la foto
@@ -190,3 +190,150 @@ BEGIN
     WHERE correo = @correo AND contrasena = @contrasena;
 END;
 GO
+
+CREATE OR ALTER PROCEDURE InsertarVehiculo
+    @usuarioId INT,
+    @marca NVARCHAR(50),
+    @modelo NVARCHAR(50),
+    @anio INT,
+    @placa NVARCHAR(20),
+    @precioColones DECIMAL(10,2),
+    @esNegociable BIT,
+    @recibeOtrosVehiculos BIT,
+    @transmision NVARCHAR(20),
+    @tipoVehiculo NVARCHAR(20),
+    @puertas INT,
+    @largo DECIMAL(5,2),
+    @ancho DECIMAL(5,2),
+    @alto DECIMAL(5,2),
+    @materialAsientos NVARCHAR(20),
+    @tipoMotor NVARCHAR(20),
+    @vidriosElectricos BIT,
+    @espejosElectricos BIT,
+    @sensoresTraseros BIT,
+    @sensoresDelanteros BIT,
+    @camaraRetroceso BIT,
+    @camara360 BIT,
+    @sensoresLaterales BIT,
+    @tableroMando NVARCHAR(20),
+    @tapizado NVARCHAR(20),
+    @sistemaSonido NVARCHAR(20),
+    @condicion INT,
+    @estaEnLeasing BIT,
+    @fotosInternas NVARCHAR(MAX),
+    @fotosExternas NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @vehiculoId INT;
+
+    INSERT INTO Vehiculos (
+        usuarioId, marca, modelo, anio, placa, precioColones, esNegociable, recibeOtrosVehiculos, transmision, tipoVehiculo, puertas, largo, ancho, alto, materialAsientos, tipoMotor, vidriosElectricos, espejosElectricos, sensoresTraseros, sensoresDelanteros, camaraRetroceso, camara360, sensoresLaterales, tableroMando, tapizado, sistemaSonido, condicion, estaEnLeasing
+    )
+    VALUES (
+        @usuarioId, @marca, @modelo, @anio, @placa, @precioColones, @esNegociable, @recibeOtrosVehiculos, @transmision, @tipoVehiculo, @puertas, @largo, @ancho, @alto, @materialAsientos, @tipoMotor, @vidriosElectricos, @espejosElectricos, @sensoresTraseros, @sensoresDelanteros, @camaraRetroceso, @camara360, @sensoresLaterales, @tableroMando, @tapizado, @sistemaSonido, @condicion, @estaEnLeasing
+    );
+
+    SET @vehiculoId = SCOPE_IDENTITY();
+
+    -- Insertar fotos internas
+    INSERT INTO FotosVehiculos (vehiculoId, urlFoto, tipoFoto)
+    SELECT @vehiculoId, value, 'interior'
+    FROM STRING_SPLIT(@fotosInternas, ',');
+
+    -- Insertar fotos externas
+    INSERT INTO FotosVehiculos (vehiculoId, urlFoto, tipoFoto)
+    SELECT @vehiculoId, value, 'exterior'
+    FROM STRING_SPLIT(@fotosExternas, ',');
+END;
+GO
+CREATE OR ALTER PROCEDURE ModificarVehiculo
+    @vehiculoId INT,
+    @marca NVARCHAR(50),
+    @modelo NVARCHAR(50),
+    @anio INT,
+    @placa NVARCHAR(20),
+    @precioColones DECIMAL(10,2),
+    @esNegociable BIT,
+    @recibeOtrosVehiculos BIT,
+    @transmision NVARCHAR(20),
+    @tipoVehiculo NVARCHAR(20),
+    @puertas INT,
+    @largo DECIMAL(5,2),
+    @ancho DECIMAL(5,2),
+    @alto DECIMAL(5,2),
+    @materialAsientos NVARCHAR(20),
+    @tipoMotor NVARCHAR(20),
+    @vidriosElectricos BIT,
+    @espejosElectricos BIT,
+    @sensoresTraseros BIT,
+    @sensoresDelanteros BIT,
+    @camaraRetroceso BIT,
+    @camara360 BIT,
+    @sensoresLaterales BIT,
+    @tableroMando NVARCHAR(20),
+    @tapizado NVARCHAR(20),
+    @sistemaSonido NVARCHAR(20),
+    @condicion INT,
+    @estaEnLeasing BIT,
+    @fotosInternas NVARCHAR(MAX),
+    @fotosExternas NVARCHAR(MAX)
+AS
+BEGIN
+    UPDATE Vehiculos
+    SET
+        marca = @marca,
+        modelo = @modelo,
+        anio = @anio,
+        placa = @placa,
+        precioColones = @precioColones,
+        esNegociable = @esNegociable,
+        recibeOtrosVehiculos = @recibeOtrosVehiculos,
+        transmision = @transmision,
+        tipoVehiculo = @tipoVehiculo,
+        puertas = @puertas,
+        largo = @largo,
+        ancho = @ancho,
+        alto = @alto,
+        materialAsientos = @materialAsientos,
+        tipoMotor = @tipoMotor,
+        vidriosElectricos = @vidriosElectricos,
+        espejosElectricos = @espejosElectricos,
+        sensoresTraseros = @sensoresTraseros,
+        sensoresDelanteros = @sensoresDelanteros,
+        camaraRetroceso = @camaraRetroceso,
+        camara360 = @camara360,
+        sensoresLaterales = @sensoresLaterales,
+        tableroMando = @tableroMando,
+        tapizado = @tapizado,
+        sistemaSonido = @sistemaSonido,
+        condicion = @condicion,
+        estaEnLeasing = @estaEnLeasing,
+        fechaActualizacion = GETDATE()
+    WHERE vehiculoId = @vehiculoId;
+
+    -- Eliminar fotos existentes
+    DELETE FROM FotosVehiculos WHERE vehiculoId = @vehiculoId;
+
+    -- Insertar nuevas fotos internas
+    INSERT INTO FotosVehiculos (vehiculoId, urlFoto, tipoFoto)
+    SELECT @vehiculoId, value, 'interior'
+    FROM STRING_SPLIT(@fotosInternas, ',');
+
+    -- Insertar nuevas fotos externas
+    INSERT INTO FotosVehiculos (vehiculoId, urlFoto, tipoFoto)
+    SELECT @vehiculoId, value, 'exterior'
+    FROM STRING_SPLIT(@fotosExternas, ',');
+END;
+GO
+CREATE OR ALTER PROCEDURE EliminarVehiculo
+    @vehiculoId INT
+AS
+BEGIN
+    -- Eliminar fotos del vehículo
+    DELETE FROM FotosVehiculos WHERE vehiculoId = @vehiculoId;
+
+    -- Eliminar el vehículo
+    DELETE FROM Vehiculos WHERE vehiculoId = @vehiculoId;
+END;
+GO
+
