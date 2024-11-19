@@ -39,7 +39,7 @@ export default function VehicleRegistrationWizard({ navigation }) {
     sistemaSonido: 'estereo7.1',
     estado: '1', // Ejemplo: 1 para "nuevo"
     leasing: false,
-    fotos: { internas: ["url1_interna,url2_interna"], externas: ["url1_externa,url2_externa"] },
+    fotos: { internas: ["https://photos.encuentra24.com/t_or_fh_l/f_auto/v1/cr/29/25/53/07/29255307_f25b72"], externas: ["https://photos.encuentra24.com/t_or_fh_l/f_auto/v1/cr/29/25/53/07/29255307_77bfa2"] },
   }));
 
   const { width } = useWindowDimensions(); // Obtén el ancho actual de la pantalla
