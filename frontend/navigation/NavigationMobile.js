@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../context/UserContext';
 
 export default function NavigationMobile() {
+  const { user, setUser } = useContext(UserContext);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
@@ -12,8 +14,12 @@ export default function NavigationMobile() {
     { name: 'Comprar', route: 'Comprar' },
     { name: 'Vender', route: 'Vender' },
     { name: 'Comparar', route: 'Comparar' },
-    { name: 'Registro', route: 'Registro' },
   ];
+
+  const handleLogout = () => {
+    setUser(null);
+    navigation.navigate('LoginPage');
+  };
 
   return (
     <ScrollView style={{ paddingTop: insets.top, backgroundColor: 'white' }}>
@@ -23,7 +29,18 @@ export default function NavigationMobile() {
           source={require('../assets/icon.png')}
           style={{ width: 60, height: 60, tintColor: 'black' }}
         />
-        <Text className="text-black text-lg mt-4">Ingresar</Text>
+        {user ? (
+          <>
+            <Text className="text-black text-lg mt-4">{user.nombre}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('UserInfo')} className="flex-row items-center mt-4">
+              <Text className="ml-2">Mi Perfil</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate('Registro')} className="flex-row items-center mt-4">
+            <Text className="ml-2">Iniciar Sesión </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View className="mt-8">
@@ -34,7 +51,6 @@ export default function NavigationMobile() {
             onPress={() => navigation.navigate(item.route)}
             className="flex-row items-center p-4 border-b border-gray-300"
           >
-            <Image source={item.icon} style={{ width: 24, height: 24, tintColor: 'gray' }} />
             <Text className="text-black text-lg ml-4">{item.name}</Text>
           </TouchableOpacity>
         ))}

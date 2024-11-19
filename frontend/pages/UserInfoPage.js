@@ -1,12 +1,15 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { UserContext } from '../context/UserContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function UserInfoPage() {
   const { user, setUser } = useContext(UserContext);
+  const navigation = useNavigation();
 
   const handleLogout = () => {
     setUser(null);
+    navigation.navigate('Registro'); // Redirigir a la página de registro
   };
 
   return (

@@ -121,7 +121,7 @@ export default function LoginPage() {
 
       setLoading(true);
       try {
-        await BackendConnection.post('/users', {
+        const response = await BackendConnection.post('/users', {
           tipoIdentificacion: form.idType,
           numeroIdentificacion: form.idNumber,
           nombre: form.firstName,
@@ -138,26 +138,9 @@ export default function LoginPage() {
           idiomaInterfaz: form.language,
         });
 
+        setUser(response); // Guardar la información del usuario en el contexto
         alert('Registro exitoso.');
-        // Limpiar los campos del formulario y restablecer el estado
-        setForm({
-          idType: 'cedula',
-          idNumber: '',
-          firstName: '',
-          lastName1: '',
-          lastName2: '',
-          nationality: '',
-          birthDate: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          phone: '',
-          province: '',
-          canton: '',
-          district: '',
-          language: 'es-CR',
-        });
-        setIsCedulaVerified(false); // Restablecer el estado de verificación de cédula
+        navigation.navigate('UserInfo'); // Redirigir a la página de información del usuario
       } catch (error) {
         console.error('Error al registrar el usuario:', error);
         alert('Error al conectar con la API. Por favor, intente más tarde.');
