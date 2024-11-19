@@ -172,3 +172,22 @@ export const obtenerVehiculoPorId = async (req, res) => {
       res.status(500).json({ success: false, message: err.message });
     }
 };
+
+export const obtenerVehiculoPorPlaca = async (req, res) => {
+    try {
+        const { placa } = req.params;
+        const pool = await getConnection();
+        const result = await pool.request()
+            .input('placa', sql.NVarChar(20), placa)
+            .execute('ObtenerVehiculoPorPlaca');
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ message: 'Vehículo no encontrado' });
+        }
+
+        res.status(200).json(result.recordset[0]);
+    } catch (err) {
+        console.error('Error al obtener el vehículo por placa:', err);
+        res.status(500).json({ message: 'Error al obtener el vehículo' });
+    }
+};
