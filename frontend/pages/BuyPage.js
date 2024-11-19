@@ -247,7 +247,7 @@ const BuyPage = () => {
             </View>
           </ScrollView>
         </View>
-          </View>
+        </View>
         )}
         <View className="flex-1 p-4">
           <TextInput

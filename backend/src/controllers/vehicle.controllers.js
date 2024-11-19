@@ -158,3 +158,17 @@ export const obtenerVehiculosConFotos = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+export const obtenerVehiculoPorId = async (req, res) => {
+    try {
+      const { vehiculoId } = req.params;
+      const pool = await getConnection();
+      const result = await pool.request()
+        .input('vehiculoId', vehiculoId)
+        .query('SELECT * FROM VistaVehiculoConPropietario WHERE vehiculoId = @vehiculoId');
+      res.status(200).json(result.recordset[0]);
+    } catch (err) {
+      console.error('Error al obtener el vehículo por ID:', err);
+      res.status(500).json({ success: false, message: err.message });
+    }
+};

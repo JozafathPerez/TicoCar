@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { insertarVehiculo, modificarVehiculo, eliminarVehiculo, obtenerVehiculos, obtenerVehiculosPorUsuario, obtenerVehiculosConFotos } from '../controllers/vehicle.controllers.js';
+import { insertarVehiculo, modificarVehiculo, eliminarVehiculo, obtenerVehiculos, obtenerVehiculosPorUsuario, obtenerVehiculosConFotos, obtenerVehiculoPorId } from '../controllers/vehicle.controllers.js';
 
 const router = Router();
 
@@ -9,6 +9,6 @@ router.delete('/vehiculos/:vehiculoId', eliminarVehiculo);
 router.get('/vehiculos', obtenerVehiculos);
 router.get('/vehiculos/usuario/:usuarioId', obtenerVehiculosPorUsuario);
 router.get("/vehiclesWithPhotos", obtenerVehiculosConFotos);
-
+router.get('/vehiculos/:vehiculoId', obtenerVehiculoPorId);
 
 export default router;
