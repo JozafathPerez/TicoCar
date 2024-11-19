@@ -6,7 +6,7 @@ import { UserContext } from '../context/UserContext';
 
 export default function ModifyPage({ route, navigation }) {
   const { vehiculo } = route.params;
-  const { user } = useContext(UserContext);
+  const { user, setRefreshVehicles } = useContext(UserContext);
   const [formData, setFormData] = useState({ ...vehiculo });
 
   const handleInputChange = (field, value) => {
@@ -51,11 +51,12 @@ export default function ModifyPage({ route, navigation }) {
 
       await BackendConnection.put('/vehiculos', data);
       console.log('Vehículo modificado:', data);
-      alert('Modificado', 'El vehículo ha sido modificado correctamente.');
+      Alert.alert('Modificado', 'El vehículo ha sido modificado correctamente.');
+      setRefreshVehicles(true); // Actualiza el estado para forzar la actualización de la lista de vehículos
       navigation.goBack();
     } catch (error) {
       console.error('Error al modificar el vehículo:', error);
-      alert('Error', 'Hubo un problema al modificar el vehículo.');
+      Alert.alert('Error', 'Hubo un problema al modificar el vehículo.');
     }
   };
 
@@ -64,7 +65,7 @@ export default function ModifyPage({ route, navigation }) {
       <TouchableOpacity
         onPress={() => navigation.navigate('Editar')}
         className="bg-gray-500 py-2 px-4 rounded"
-        >
+      >
         <Text className="text-white">Volver a Editar Vehículos</Text>
       </TouchableOpacity>
       <Text className="text-2xl font-bold text-center mb-4">Modificar Vehículo</Text>

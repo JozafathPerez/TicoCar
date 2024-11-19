@@ -5,23 +5,30 @@ import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../context/UserContext';
 
 export default function EditPage() {
-  const { user } = useContext(UserContext);
+  const { user, refreshVehicles, setRefreshVehicles } = useContext(UserContext);
   const [vehiculos, setVehiculos] = useState([]);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchVehiculos = async () => {
-      try {
-        const response = await BackendConnection.get(`/vehiculos/usuario/${user.usuarioId}`);
-        setVehiculos(response);
-      } catch (error) {
-        console.error('Error al obtener los vehículos:', error);
-        alert('Error', 'Hubo un problema al obtener los vehículos.');
-      }
-    };
+  const fetchVehiculos = async () => {
+    try {
+      const response = await BackendConnection.get(`/vehiculos/usuario/${user.usuarioId}`);
+      setVehiculos(response);
+    } catch (error) {
+      console.error('Error al obtener los vehículos:', error);
+      alert('Error', 'Hubo un problema al obtener los vehículos.');
+    }
+  };
 
+  useEffect(() => {
     fetchVehiculos();
-  }, [user.usuarioId]);
+  }, [user.usuarioId, refreshVehicles]);
+
+  useEffect(() => {
+    if (refreshVehicles) {
+      fetchVehiculos();
+      setRefreshVehicles(false);
+    }
+  }, [refreshVehicles]);
 
   const handleDelete = async (vehiculoId) => {
     try {

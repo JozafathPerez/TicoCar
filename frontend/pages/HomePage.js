@@ -1,7 +1,12 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function HomePage() {
+  const { width } = useWindowDimensions();
+  const isMobileView = width < 768; // Consideramos móvil si el ancho es menor a 768px
+
   return (
     <ScrollView className="flex-1 bg-gray-100">
       {/* Sección con fondo personalizado */}
@@ -18,11 +23,23 @@ export default function HomePage() {
             <Text className="text-white font-bold">Buscar</Text>
           </TouchableOpacity>
         </View>
+        <View style={[styles.hiddenElement, { marginTop: 20 }]}>
+          <TouchableOpacity className="bg-[#EEF1FB] rounded-full px-6 py-2 ml-2">
+            <Text className="text-[#EEF1FB] bg-[#EEF1FB] font-bold">Buscar</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Imagen del auto */}
         <Image
           source={require('../assets/HomeCar.png')} // Actualiza con la ubicación real de tu imagen
-          style={{ width: 1166, height: 150, resizeMode: 'contain', marginTop: 20 }}
+          style={[
+            styles.carImage,
+            {
+              width: isMobileView ? wp('90%') : wp('70%'),
+              height: isMobileView ? hp('20%') : hp('40%'),
+              marginTop: isMobileView ? 20 : -50,
+            },
+          ]}
         />
       </View>
 
@@ -65,3 +82,11 @@ export default function HomePage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  carImage: {
+    resizeMode: 'contain',
+    position: 'relative',
+    zIndex: 1,
+  },
+});
