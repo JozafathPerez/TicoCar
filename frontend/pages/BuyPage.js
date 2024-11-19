@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput, useWindowDimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, TextInput, useWindowDimensions, Button } from "react-native";
 import CustomCheckbox from "../components/CustomCheckbox";
 import BackendConnection from '../services/BackendConnection';
 import VehicleInfo from "../components/CardVehicle";
+
 
 const FilterSection = ({ title, options, onChange }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -70,6 +71,7 @@ const BuyPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [vehicles, setVehicles] = useState([]);
   const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -188,7 +190,65 @@ const BuyPage = () => {
               onChange={(option) => handleFilterChange("esNegociable", option)}
             />
           </View>
-        ) : null}
+        ) : (
+          // Mostrar botón para desplegar filtros en pantallas pequeñas
+          <View className="w-full p-4 bg-gray-100">
+            <Button title="Mostrar Filtros" onPress={() => setFiltersVisible(!filtersVisible)} />
+            {filtersVisible && (
+              <View className="absolute top-0 left-0 w-2/3 h-full bg-white p-4 shadow-lg z-50">
+                <ScrollView>
+                <Text className="text-lg font-bold text-gray-900 mb-4">Filtros</Text>
+                <FilterSection
+                  title="Marca"
+                  options={filters.marca}
+                  onChange={(option) => handleFilterChange("marca", option)}
+                />
+                <FilterSection
+                  title="Año"
+                  options={filters.anio}
+                  onChange={(option) => handleFilterChange("anio", option)}
+                />
+                <FilterSection
+                  title="Transmisión"
+                  options={filters.transmision}
+                  onChange={(option) => handleFilterChange("transmision", option)}
+                />
+                <FilterSection
+                  title="Tipo de Motor"
+                  options={filters.tipoMotor}
+                  onChange={(option) => handleFilterChange("tipoMotor", option)}
+                />
+                <FilterSection
+                  title="Tipo de Vehículo"
+                  options={filters.tipoVehiculo}
+                  onChange={(option) => handleFilterChange("tipoVehiculo", option)}
+                />
+                <FilterSection
+                  title="Es Negociable"
+                  options={filters.esNegociable}
+                  onChange={(option) => handleFilterChange("esNegociable", option)}
+                />
+                <Button title="Cerrar" onPress={() => setFiltersVisible(false)} />
+                </ScrollView>
+              </View>
+            )}
+          <View className="flex-1 p-4">
+          <TextInput
+            className="p-2 mb-4 border border-gray-300 rounded-lg"
+            placeholder="Buscar..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <ScrollView>
+            <View className="p-4">
+              {filteredVehicles.map((vehicle) => (
+                <VehicleInfo key={vehicle.vehiculoId} vehicle={vehicle} />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+          </View>
+        )}
         <View className="flex-1 p-4">
           <TextInput
             className="p-2 mb-4 border border-gray-300 rounded-lg"
