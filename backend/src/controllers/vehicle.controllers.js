@@ -147,3 +147,14 @@ export const obtenerVehiculos = async (req, res) => {
         res.status(500).send(err.message);
     }
 };
+
+export const obtenerVehiculosConFotos = async (req, res) => {
+    try {
+        const pool = await getConnection();
+        const result = await pool.request().query('SELECT * FROM VistaVehiculoConFotos');
+        res.status(200).json(result.recordset);
+    } catch (err) {
+        console.error('Error al obtener vehículos con fotos:', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};

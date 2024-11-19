@@ -16,6 +16,7 @@ import ComparePage from './pages/ComparePage';
 import LoginPage from './pages/LoginPage';
 import UserInfoPage from './pages/UserInfoPage'; 
 import UserOut from './pages/UserOut';
+import CarDetail from './pages/CarDetail';
 
 
 import './global.css';
@@ -44,6 +45,7 @@ export default function App() {
             <Stack.Screen name="UserInfo" component={UserInfoPage} />
             <Stack.Screen name="UserOut" component={UserOut} />
             <Stack.Screen name="NavigationMobile" component={NavigationMobile} />
+            <Stack.Screen name="CarDetail" component={CarDetail} />
 
           </Stack.Navigator>
         </NavigationContainer>

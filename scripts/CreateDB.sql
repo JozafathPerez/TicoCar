@@ -1,6 +1,6 @@
 -- Crear la base de datos
---CREATE DATABASE TicoCarBD;
--- GO
+CREATE DATABASE TicoCarBD;
+GO
 
 -- Usar la base de datos
 USE TicoCarBD;
@@ -417,3 +417,5 @@ BEGIN
         v.fechaActualizacion;
 END;
 GO
+
+

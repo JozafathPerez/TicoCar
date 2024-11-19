@@ -1,40 +1,29 @@
 import React from "react";
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
-// Componente base
-const VehicleInfo = ({ name, type, price }) => {
+const VehicleInfo = ({ vehicle }) => {
+  const navigation = useNavigation();
+  const { vehiculoId, marca, modelo, precioColones, transmision, anio, imagenesExternas } = vehicle;
+  const exteriorImages = imagenesExternas ? imagenesExternas.split(', ') : [];
+  
+  const handleCardClick = () => {
+    navigation.navigate('CarDetail', { vehiculoId });
+  };
+
   return (
-    <div className="vehicle-card border p-4 rounded-lg shadow-lg max-w-md">
-      <h2 className="text-xl font-bold">{name}</h2>
-      <p className="text-gray-600">Tipo: {type}</p>
-      <p className="text-green-600 font-semibold">Precio: ${price}</p>
-    </div>
-  );
-};
-
-// Decorador que agrega un distintivo
-const withBadge = (WrappedComponent, badgeText) => {
-  return (props) => (
-    <div className="relative">
-      <WrappedComponent {...props} />
-      {badgeText && (
-        <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-          {badgeText}
-        </div>
+    <TouchableOpacity className="border border-gray-300 rounded-lg p-4 mb-4 bg-white shadow-md flex-row" onPress={handleCardClick}>
+      {exteriorImages.length > 0 && (
+        <Image source={{ uri: exteriorImages[0] }} className="w-24 h-24 rounded-lg mr-4" />
       )}
-    </div>
+      <View className="flex-1">
+        <Text className="text-xl font-bold">{marca} {modelo}</Text>
+        <Text className="text-gray-600">Transmisión: {transmision}</Text>
+        <Text className="text-gray-600">Año: {anio}</Text>
+        <Text className="text-green-600 font-bold">Precio: ₡{precioColones}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
-// Ejemplo de uso
-const VehicleWithBadge = withBadge(VehicleInfo, "Negociable"); // Puedes cambiar "Negociable" por "Reservado", etc.
-
-const App = () => {
-  return (
-    <div className="app-container p-8">
-      <VehicleWithBadge name="Toyota Corolla" type="Sedán" price="15000" />
-      <VehicleWithBadge name="Ford Ranger" type="Pickup" price="35000" />
-    </div>
-  );
-};
-
-export default App;
+export default VehicleInfo;
