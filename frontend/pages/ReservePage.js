@@ -36,15 +36,15 @@ export default function ReservePage() {
       const response = await BackendConnection.post('/reservas', reserva);
 
       if (response) {
-        Alert.alert('Reserva realizada', 'Su reserva ha sido registrada exitosamente.', [
+        alert('Reserva realizada', 'Su reserva ha sido registrada exitosamente.', [
           { text: 'OK', onPress: () => navigation.navigate('Home') }
         ]);
       } else {
-        Alert.alert('Error', 'Hubo un problema al registrar su reserva.');
+        alert('Error', 'Hubo un problema al registrar su reserva.');
       }
     } catch (error) {
       console.error('Error al registrar la reserva:', error);
-      Alert.alert('Error', 'Hubo un problema al registrar su reserva.');
+      alert('Error', 'Hubo un problema al registrar su reserva.');
     }
   };
 
