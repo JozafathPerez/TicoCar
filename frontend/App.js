@@ -17,7 +17,7 @@ import LoginPage from './pages/LoginPage';
 import UserInfoPage from './pages/UserInfoPage'; 
 import UserOut from './pages/UserOut';
 import CarDetail from './pages/CarDetail';
-import Reserve from './pages/Reserve';
+import Reserve from './pages/ReservePage';
 
 
 import './global.css';

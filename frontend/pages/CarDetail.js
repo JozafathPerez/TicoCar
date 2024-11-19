@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Image, ScrollView, Button } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import BackendConnection from '../services/BackendConnection';
 import ImageCarousel from '../components/ImageCarousel';
 
 export default function CarDetail() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { vehiculoId } = route.params;
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +52,6 @@ export default function CarDetail() {
       {/* Contenedor de tablas en dos columnas */}
       <View className="flex-row justify-between flex-wrap p-10">
         
-
         {/* Tabla de Especificaciones */}
         <View className="bg-white p-4 rounded-lg shadow-md w-full sm:w-[48%] mb-4">
           <Text className="text-2xl font-bold mb-2">Especificaciones del Auto</Text>
@@ -94,7 +94,7 @@ export default function CarDetail() {
           <Text>Correo del Propietario: {vehicle.propietarioCorreo}</Text>
           <Text>Teléfono del Propietario: {vehicle.propietarioTelefono}</Text>
           <View className="m-8">
-            <Button title="Realizar una Reserva" onPress={() => alert('Reserva realizada')} />
+            <Button title="Realizar una Reserva" onPress={() => navigation.navigate('Reserve', { vehicle })} />
           </View>
           
       </View>
