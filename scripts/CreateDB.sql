@@ -418,4 +418,18 @@ BEGIN
 END;
 GO
 
-
+--Procedimiento para guardar una reserva
+CREATE PROCEDURE RegistrarReserva
+    @usuarioId INT,
+    @vehiculoId INT,
+    @precioDolares DECIMAL(10,2),
+    @metodoPago NVARCHAR(20),
+    @montoPago DECIMAL(10,2),
+    @lugarCita NVARCHAR(50),
+    @fechaCita DATETIME
+AS
+BEGIN
+    INSERT INTO ReservasVehiculos (usuarioId, vehiculoId, precioDolares, metodoPago, montoPago, lugarCita, fechaCita)
+    VALUES (@usuarioId, @vehiculoId, @precioDolares, @metodoPago, @montoPago, @lugarCita, GETDATE());
+END;
+GO

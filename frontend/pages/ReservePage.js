@@ -1,18 +1,51 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView} from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, TextInput, Button, ScrollView, Alert } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-import DatePicker from 'react-native-datepicker';
+import BackendConnection from '../services/BackendConnection';
+import { UserContext } from '../context/UserContext';
 
 export default function ReservePage() {
   const route = useRoute();
+  const navigation = useNavigation(); // Asegúrate de definir navigation
   const { vehicle } = route.params;
+  const { user } = useContext(UserContext);
   const [lugarCita, setLugarCita] = useState('');
   const [metodoPago, setMetodoPago] = useState('');
+  const [fechaCita, setFechaCita] = useState('');
+  const [horaCita, setHoraCita] = useState('');
 
-  const handleReserva = (e) => {
-    e.preventDefault();
-    console.log('Reserva realizada', { lugarCita, metodoPago });
+  useEffect(() => {
+    if (!user) {
+      navigation.navigate('UserOut');
+    }
+  }, [user, navigation]);
+
+  const handleReserva = async () => {
+    const reserva = {
+      usuarioId: user.usuarioId, 
+      vehiculoId: vehicle.vehiculoId,
+      precioDolares: (vehicle.precioColones / 550).toFixed(2),
+      metodoPago,
+      montoPago: 2000.00,
+      lugarCita,
+      fechaCita: `2024-11-20 14:30:00`
+    };
+
+    try {
+      const response = await BackendConnection.post('/reservas', reserva);
+
+      if (response) {
+        Alert.alert('Reserva realizada', 'Su reserva ha sido registrada exitosamente.', [
+          { text: 'OK', onPress: () => navigation.navigate('Home') }
+        ]);
+      } else {
+        Alert.alert('Error', 'Hubo un problema al registrar su reserva.');
+      }
+    } catch (error) {
+      console.error('Error al registrar la reserva:', error);
+      Alert.alert('Error', 'Hubo un problema al registrar su reserva.');
+    }
   };
 
   return (
@@ -33,8 +66,9 @@ export default function ReservePage() {
               <Text className="font-medium">Fecha de cita</Text>
               <TextInput
                 className="border border-gray-300 rounded-lg p-2"
-                placeholder="Seleccione una fecha"
-                type="date"
+                placeholder="YYYY-MM-DD"
+                value={fechaCita}
+                onChangeText={setFechaCita}
                 required
               />
             </View>
@@ -42,8 +76,9 @@ export default function ReservePage() {
               <Text className="font-medium">Hora de cita</Text>
               <TextInput
                 className="border border-gray-300 rounded-lg p-2"
-                placeholder="Seleccione una hora"
-                type="time"
+                placeholder="HH:MM"
+                value={horaCita}
+                onChangeText={setHoraCita}
                 required
               />
             </View>
@@ -62,7 +97,6 @@ export default function ReservePage() {
               </Picker>
             </View>
             <View className="space-y-2">
-              <View className="space-y-2">
               <Text className="font-medium">Método de pago para la cuota de revisión (₡2,000.00)</Text>
               <Picker
                 selectedValue={metodoPago}
@@ -74,7 +108,6 @@ export default function ReservePage() {
                 <Picker.Item label="PayPal" value="paypal" />
                 <Picker.Item label="Tarjeta de crédito" value="tarjeta" />
               </Picker>
-            </View>
             </View>
             <Button title="Reservar y Pagar" onPress={handleReserva} className="w-full bg-blue-500 text-white p-4 rounded-lg" />
           </View>
